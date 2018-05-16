@@ -1,0 +1,35 @@
+문재인 대통령 취임 100일 담화
+시각화 (
+
+install.packages("KoNLP")
+install.packages("dplyr")
+library(KoNLP)
+library(dplyr)
+install.packages("RColorBrewer")
+install.packages("wordcloud")
+library(wordcloud)
+library(RColorBrewer)
+
+
+setwd("D:/data/")
+speech <- readLines("speech.txt")
+head(speech)
+
+data <- sapply(speech, extractNoun, USE.NAMES = F)
+data_unlist <- unlist(data)
+wordcount <- table(data_unlist)
+wordcount_top <-head(sort(wordcount, decreasing = T),100)
+View(wordcount_top)
+data <- sapply(data, extractNoun, USE.NAMES = F)
+
+data_unlist <- Filter(function(x){nchar(x)>=2}, data_unlist)
+
+data_unlist <- gsub("마련", "", data_unlist)
+data_unlist <- gsub("\\[","",data_unlist)
+data_unlist <- gsub('[ㄱ-ㅎ]','',data_unlist)
+data_unlist<- gsub('(ㅜ|ㅠ)','',data_unlist)
+data_unlist <- gsub("\\d+","",data_unlist)
+color <- brewer.pal(3, "Set3")
+windowsFonts(font=windowsFont("a한글사랑L"))
+wordcloud(names(wordcount_top), freq=wordcount_top, scale=c(6,0.5), 
+          min.freq=1, random.order=F, colors=brewer.pal(3,"Set1")) 
